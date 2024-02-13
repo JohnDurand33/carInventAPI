@@ -26,18 +26,20 @@
                         <a href="{{ url_for('site.home') }}" class="nav-link">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ url_for('site.profile') }}" class="nav-link">Profile</a>
+                        <a href="{{ url_for('site.profile') }}" class="nav-link">My Collection</a>
                     </li>
-                    {%if current_user.is_authenticated %}
+                    {% if current_user.is_authenticated %}
+                    <li class="nav-item">
+                        <a href="{{ url_for('auth.logout') }}" class="nav-link">Log Out</a>
+                    </li>
+                    {% else %}
                     <li class="nav-item">
                         <a href="{{ url_for('auth.signin') }}" class="nav-link">Log In</a>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ url_for('auth.logout') }}" class="nav-link">Log Out</a>
-                    </li>
-                    <li class="nav-item">
                         <a href="{{ url_for('auth.signup') }}" class="nav-link">Sign Up</a>
                     </li>
+                    {% endif %}
                 </ul>
             </div>
         </div>
