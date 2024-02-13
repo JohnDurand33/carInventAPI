@@ -17,7 +17,8 @@ def load_user(user_id):
     return User.query.get(user_id)
 
 class User(db.Model, UserMixin):
-    collector_id = db.Column(db.String, primary_key=True)
+    __tablename__ = 'user'
+    collector_id = db.Column(db.String(100), primary_key=True)
     first_name = db.Column(db.String(150), nullable=True, default='')
     last_name = db.Column(db.String(150), nullable = True, default = '')
     email = db.Column(db.String(150), nullable = False)
@@ -49,8 +50,9 @@ class User(db.Model, UserMixin):
         return f'<User | collector_id: {self.collector_id} | email: {self.email}>'
 
 class Car(db.Model):
-    car_id = db.Column(db.String, primary_key = True)
-    year = db.Column(db.Integer(4), nullable = False)
+    __tablename__ = 'car'
+    car_id = db.Column(db.String(100), primary_key = True)
+    year = db.Column(db.Integer(), nullable = False)
     color = db.Column(db.String(50))
     make = db.Column(db.String(50))
     model = db.Column(db.String(200))
@@ -70,9 +72,9 @@ class Car(db.Model):
     def set_id(self):
         return (secrets.token_urlsafe())
 
-class ContactSchema(ma.Schema):
+class CarSchema(ma.Schema):
     class Meta:
         fields = ['id', 'year','color','make', 'model']
 
-contact_schema = ContactSchema()
-contacts_schema = ContactSchema(many=True)
+car_schema = CarSchema()
+cars_schema = CarSchema(many=True)
