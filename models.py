@@ -46,7 +46,7 @@ class User(db.Model, UserMixin):
         return self.pw_hash
 
     def __repr__(self):
-        return f'User {self.email} has been added to the database'
+        return f'<User | collector_id: {self.collector_id} | email: {self.email}>'
 
 class Car(db.Model):
     car_id = db.Column(db.String, primary_key = True)
@@ -54,7 +54,7 @@ class Car(db.Model):
     color = db.Column(db.String(50))
     make = db.Column(db.String(50))
     model = db.Column(db.String(200))
-    collector_id = db.Column(db.Integer, db.ForeignKey('collector.collector_id'), nullable = False)
+    collector_id = db.Column(db.Integer, db.ForeignKey(User.collector_id), nullable = False) # try lowercase user in quotes if issues
 
     def __init__(self,year,color,make,model,collector_id,user_token, id = ''):
         self.id = self.set_id()
@@ -63,10 +63,9 @@ class Car(db.Model):
         self.make = make
         self.model = model
         self.collector_id = collector_id
-        self.user_token = user_token
 
     def __repr__(self):
-        return f'The following car has been added to the collection: {self.email}'
+        return f'<Car | id: {self.id} | year: {self.year} | color | {self.collector_id} | make: {self.make} | model | {self.model}>'
 
     def set_id(self):
         return (secrets.token_urlsafe())
