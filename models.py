@@ -19,7 +19,7 @@ def load_user(user_id):
 
 class User(db.Model, UserMixin):
     __tablename__ = 'user'
-    collector_id = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, unique=True, nullable=False)
+    id = db.Column(UUID(as_uuid=True), default=uuid.uuid4, primary_key=True, unique=True, nullable=False)
     first_name = db.Column(db.String(150), nullable=True, default='')
     last_name = db.Column(db.String(150), nullable = True, default = '')
     email = db.Column(db.String(150), nullable = False)
@@ -29,7 +29,7 @@ class User(db.Model, UserMixin):
     date_created = db.Column(db.DateTime, nullable = False, default = datetime.utcnow)
 
     def __init__(self, first_name='', last_name='', password='', email='', token='', g_auth_verify=False):
-        # self.collector_id = self.set_id()
+        self.id = self.set_id()
         self.first_name = first_name
         self.last_name = last_name
         self.password = self.set_password(password)
@@ -40,36 +40,33 @@ class User(db.Model, UserMixin):
     def set_token(self, length):
         return secrets.token_hex(length)
 
-    # def set_id(self):
-    #     return str(uuid.uuid4())
+    def set_id(self):
+        return str(uuid.uuid4())
     
     def set_password(self, password):
         self.pw_hash = generate_password_hash(password)
         return self.pw_hash
 
     def __repr__(self):
-        return f'<User | collector_id: {self.collector_id} | email: {self.email}>'
-    
-    def get_id(self):
-        return self.collector_id
+        return f'<User | collector_id: {self.id} | email: {self.email}>'
 
 class Car(db.Model):
     __tablename__ = 'car'
-    car_id = db.Column(db.String(100), primary_key = True)
-    year = db.Column(db.Integer(), nullable = False)
+    car_id = db.Column(db.String(100), primary_key = True, default=uuid.uuid4)
+    year = db.Column(db.String, nullable = False)
     color = db.Column(db.String(50))
     make = db.Column(db.String(50))
     model = db.Column(db.String(200))
     user_token = db.Column(db.String, db.ForeignKey('user.token'), nullable = False)
-    collector_id = db.Column(UUID(as_uuid=True), db.ForeignKey(User.collector_id), nullable = False) # try lowercase user in quotes if issues
+    collector_id = db.Column(db.String, db.ForeignKey(User.id), nullable = False) 
 
-    def __init__(self,year,color,make,model,collector_id,user_token, id = ''):
+    def __init__(self,year,color,make,model,user_token, collector_id=User.id,id = ''):
         self.id = self.set_id()
         self.year = year
         self.color = color
         self.make = make
         self.model = model
-        self.collector_id = collector_id
+        self.user_token = user_token
 
     def __repr__(self):
         return f'<Car | id: {self.id} | year: {self.year} | color | {self.collector_id} | make: {self.make} | model | {self.model}>'
