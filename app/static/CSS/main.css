@@ -1,8 +1,7 @@
 *,*:before,*::after{
-    box-sizing: inherit;
     margin: 0;
     padding: 0;
-    border: 1px solid red;
+    box-sizing: inherit;
 }
 
 body {

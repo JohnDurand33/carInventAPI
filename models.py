@@ -18,7 +18,7 @@ def load_user(user_id):
 
 class User(db.Model, UserMixin):
     __tablename__ = 'user'
-    collector_id = db.Column(db.String(100), primary_key=True)
+    collector_id = db.Column(db.Integer(), primary_key=True)
     first_name = db.Column(db.String(150), nullable=True, default='')
     last_name = db.Column(db.String(150), nullable = True, default = '')
     email = db.Column(db.String(150), nullable = False)
@@ -56,6 +56,7 @@ class Car(db.Model):
     color = db.Column(db.String(50))
     make = db.Column(db.String(50))
     model = db.Column(db.String(200))
+    user_token = db.Column(db.String, db.ForeignKey('user.token'), nullable = False)
     collector_id = db.Column(db.Integer, db.ForeignKey(User.collector_id), nullable = False) # try lowercase user in quotes if issues
 
     def __init__(self,year,color,make,model,collector_id,user_token, id = ''):
