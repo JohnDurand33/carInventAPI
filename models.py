@@ -19,7 +19,7 @@ def load_user(user_id):
 
 class User(db.Model, UserMixin):
     __tablename__ = 'user'
-    id = db.Column(UUID(as_uuid=True), default=uuid.uuid4, primary_key=True, unique=True, nullable=False)
+    id = db.Column(db.String(), primary_key=True, unique=True, nullable=False)
     first_name = db.Column(db.String(150), nullable=True, default='')
     last_name = db.Column(db.String(150), nullable = True, default = '')
     email = db.Column(db.String(150), nullable = False)
@@ -37,11 +37,11 @@ class User(db.Model, UserMixin):
         self.token = self.set_token(24)
         self.g_auth_verify = g_auth_verify
 
+    def set_id(self):
+        return str(uuid.uuid4)
+
     def set_token(self, length):
         return secrets.token_hex(length)
-
-    def set_id(self):
-        return str(uuid.uuid4())
     
     def set_password(self, password):
         self.pw_hash = generate_password_hash(password)
@@ -52,21 +52,22 @@ class User(db.Model, UserMixin):
 
 class Car(db.Model):
     __tablename__ = 'car'
-    car_id = db.Column(db.String(100), primary_key = True, default=uuid.uuid4)
-    year = db.Column(db.String, nullable = False)
+    id = db.Column(db.String, primary_key = True, unique = True, nullable = False)
+    year = db.Column(db.String(6), nullable = False)
     color = db.Column(db.String(50))
     make = db.Column(db.String(50))
     model = db.Column(db.String(200))
     user_token = db.Column(db.String, db.ForeignKey('user.token'), nullable = False)
-    collector_id = db.Column(db.String, db.ForeignKey(User.id), nullable = False) 
+    collector_id = db.Column(db.String(), db.ForeignKey('user.id'), nullable = False) 
 
-    def __init__(self,year,color,make,model,user_token, collector_id=User.id,id = ''):
+    def __init__(self,year,color,make,model,user_token, collector_id):
         self.id = self.set_id()
         self.year = year
         self.color = color
         self.make = make
         self.model = model
         self.user_token = user_token
+        self.collector_id = collector_id
 
     def __repr__(self):
         return f'<Car | id: {self.id} | year: {self.year} | color | {self.collector_id} | make: {self.make} | model | {self.model}>'

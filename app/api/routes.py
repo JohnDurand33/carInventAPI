@@ -1,18 +1,19 @@
 from flask import Blueprint, request, jsonify, render_template
 from helpers import token_required
 from models import db, User, Car, car_schema, cars_schema
+import uuid
 
 api = Blueprint('api', __name__, url_prefix='/api')
 
 @api.route('/cars', methods = ['POST'])
 @token_required
 def create_car(current_user_token):
-    data = request.get_json()
     color = request.json['color']
     year = request.json['year']
     make = request.json['make']
     model = request.json['model']
     user_token = current_user_token.token
+    collector_id = current_user_token.id
 
     if not user_token:
         return jsonify({"error" : "Missing user token"}), 400
@@ -34,4 +35,40 @@ def get_cars(current_user_token):
     cars = Car.query.filter_by(user_token = a_user).all()
     response = cars_schema.dump(cars)
     return jsonify(response)
+
+# OPTIONAL - SHOULD PULL ONE CAR
+# @api.toue('/cars/<id>', methods = ['GET'])
+# @token_required
+# def get_single_car(current_user_token, id):
+#     fan = current_user_token.token
+#     if fan:
+#         car = Car.query.get(id)
+#         response = car_schema
+#         return jsonify(response)
+#     else:
+#         return jsonify({"message": "Valid Token Required"})
+
+@api.route('/cars/<string:id>', methods=['POST', 'PUT'])
+@token_required
+def update_car(current_user_token, id):
+
+    car = Car.query.first()
+    if not car:
+        print(f'car not found' + id)
+    data = request.get_json()
+    car.color = data.get('color')
+    car.year = data.get('year')
+    car.make = data.get('make')
+    car.model = data.get('model')
+    car.user_token = current_user_token.token
+
+    db.session.commit()
+    response = car_schema.dump(car)
+    return jsonify(response), 200
+
+
+
+
+
+
     

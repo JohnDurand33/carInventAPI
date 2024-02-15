@@ -9,21 +9,20 @@ auth = Blueprint('auth', __name__, template_folder='auth_templates')
 def signup():
     form = UserLoginForm()
 
-    try:
-        if request.method == 'POST' and form.validate_on_submit():
-            email = form.email.data
-            password = form.password.data
-            print(f'email | {email}, password | {password}')
 
-            user = User(email = email, password = password)
+    if request.method == 'POST' and form.validate_on_submit():
+        email = form.email.data
+        password = form.password.data
+        print(f'email | {email}, password | {password}')
 
-            db.session.add(user)
-            db.session.commit()
+        user = User(email = email, password = password)
 
-            flash(f'You have successfully created a user account {email}', 'User-created')
-            return redirect(url_for('site.home'))
-    except:
-        raise Exception('Invalid form data: Please check your form')
+        db.session.add(user)
+        db.session.commit()
+
+        flash(f'You have successfully created a user account {email}', 'User-created')
+        return redirect(url_for('site.home'))
+        
     return render_template('sign_up.html', form = form)
 
 @auth.route('/signin', methods = ['GET','POST'])
