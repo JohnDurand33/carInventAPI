@@ -1,25 +1,25 @@
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-import uuid
 from datetime import datetime
+import uuid
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from flask_login import LoginManager
 from flask_marshmallow import Marshmallow
 import secrets
-from sqlalchemy.dialects.postgresql import UUID
+# from sqlalchemy.dialects.postgresql import UUID
 
 login_manager = LoginManager()
 ma = Marshmallow()
 db = SQLAlchemy()
 
 @login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(user_id)
+def load_user(id):
+    return User.query.get(id)
 
 class User(db.Model, UserMixin):
     __tablename__ = 'user'
-    id = db.Column(db.String(), primary_key=True, unique=True, nullable=False)
+    id = db.Column(db.String, primary_key=True)
     first_name = db.Column(db.String(150), nullable=True, default='')
     last_name = db.Column(db.String(150), nullable = True, default = '')
     email = db.Column(db.String(150), nullable = False)
@@ -38,7 +38,7 @@ class User(db.Model, UserMixin):
         self.g_auth_verify = g_auth_verify
 
     def set_id(self):
-        return str(uuid.uuid4)
+        return str(uuid.uuid4())
 
     def set_token(self, length):
         return secrets.token_hex(length)
@@ -48,29 +48,27 @@ class User(db.Model, UserMixin):
         return self.pw_hash
 
     def __repr__(self):
-        return f'<User | collector_id: {self.id} | email: {self.email}>'
+        return f'<User | id: {self.id} | email: {self.email}>'
 
 class Car(db.Model):
     __tablename__ = 'car'
-    id = db.Column(db.String, primary_key = True, unique = True, nullable = False)
+    id = db.Column(db.String, primary_key=True)
     year = db.Column(db.String(6), nullable = False)
     color = db.Column(db.String(50))
     make = db.Column(db.String(50))
     model = db.Column(db.String(200))
     user_token = db.Column(db.String, db.ForeignKey('user.token'), nullable = False)
-    collector_id = db.Column(db.String(), db.ForeignKey('user.id'), nullable = False) 
 
-    def __init__(self,year,color,make,model,user_token, collector_id):
+    def __init__(self,year,color,make,model,user_token):
         self.id = self.set_id()
         self.year = year
         self.color = color
         self.make = make
         self.model = model
         self.user_token = user_token
-        self.collector_id = collector_id
 
     def __repr__(self):
-        return f'<Car | id: {self.id} | year: {self.year} | color | {self.collector_id} | make: {self.make} | model | {self.model}>'
+        return f'<Car | color: {self.color} | year: {self.year} | make: {self.make} | model | {self.model}>'
 
     def set_id(self):
         return (secrets.token_urlsafe())

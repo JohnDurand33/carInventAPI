@@ -20,7 +20,7 @@ def token_required(our_flask_function):
         if not current_user_token:
             return jsonify({'message': 'Token is invalid'})
         
-        return our_flask_function(current_user_token, *args, *kwargs)
+        return our_flask_function(current_user_token, *args, **kwargs)
     return decorated
 
 class JSONEncoder(json.JSONEncoder):
